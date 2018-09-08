@@ -56,7 +56,7 @@ def _typescript_proto_library_impl(ctx):
 
   ts_out = "service=true:"
 
-  protoc_command = "%s --plugin=protoc-gen-ts=%s --ts_out=%s%s --js_out=import_style=commonjs,binary:%s --descriptor_set_in=%s %s" % (ctx.file._protoc.path, ctx.files._ts_protoc_gen[1].path, ts_out, ctx.var["BINDIR"], ctx.var["BINDIR"], ":".join(descriptor_sets), " ".join(proto_inputs))
+  protoc_command = "%s --plugin=protoc-gen-ts=%s --ts_out=%s%s --js_out=import_style=commonjs,binary:%s --descriptor_set_in=%s %s" % (ctx.file._protoc.path, ctx.files._ts_protoc_gen[1].path, ts_out, ctx.attr.output_dir, ctx.attr.output_dir, ":".join(descriptor_sets), " ".join(proto_inputs))
 
   ctx.actions.run_shell(
     inputs = inputs,
@@ -68,7 +68,7 @@ def _typescript_proto_library_impl(ctx):
   if ctx.attr.debug:
     print("protoc command: ", protoc_command)
     print("service file modification: ", file_modifications)
-    print("ctx.var['BINDIR']: ", ctx.var["BINDIR"])
+    print("output_dir: ", ctx.attr.output_dir)
     print("normalized_file: ", normalized_file)
 
   return DefaultInfo(
@@ -91,8 +91,9 @@ typescript_proto_library = rule(
     "debug": attr.bool(
       doc="Set for additional logging",
       mandatory = False,
-      default = False,
+      default = True,
     ),
+    "output_dir": attr.string(mandatory = True),
     "_ts_protoc_gen": attr.label(
       allow_files = True,
       executable = True,
