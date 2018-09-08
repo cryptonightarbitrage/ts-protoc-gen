@@ -59,6 +59,10 @@ def _typescript_proto_library_impl(ctx):
   protoc_command = "%s --plugin=protoc-gen-ts=%s --ts_out=%s%s --js_out=import_style=commonjs,binary:%s --descriptor_set_in=%s %s" % (ctx.file._protoc.path, ctx.files._ts_protoc_gen[1].path, ts_out, ctx.attr.output_dir, ctx.attr.output_dir, ":".join(descriptor_sets), " ".join(proto_inputs))
 
   ctx.actions.run_shell(
+    command = "mkdir %s" % (ctx.attr.output_dir)
+  )
+
+  ctx.actions.run_shell(
     inputs = inputs,
     outputs = outputs,
     progress_message = "Creating Typescript pb files %s" % ctx.label,
